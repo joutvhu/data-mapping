@@ -1,0 +1,15 @@
+# IDE
+.git
+.idea
+
+# Npm
+yarn.lock
+yarn-debug.log*
+yarn-error.log*
+
+# Config
+tslint.json
+tsconfig*.json
+
+# Source
+src/

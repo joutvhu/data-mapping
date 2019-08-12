@@ -1,0 +1,45 @@
+{
+  "name": "data-mapping",
+  "version": "1.0.0",
+  "description": "Mapping the response to the defined data type.",
+  "author": "Jout V Hu (Giao Ho)",
+  "license": "MIT",
+  "homepage": "https://github.com/joutvhu/data-mapping#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joutvhu/data-mapping.git"
+  },
+  "bugs": {
+    "url": "https://github.com/joutvhu/data-mapping/issues"
+  },
+  "keywords": [
+    "data-mapping",
+    "data",
+    "mapping",
+    "mapper"
+  ],
+  "main": "lib/index.js",
+  "types": "./lib/index.d.ts",
+  "directories": {
+    "lib": "lib",
+    "src": "src"
+  },
+  "files": [
+    "lib",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc --project ./tsconfig.json",
+    "lint": "tslint -c ./tslint.json --project ./tsconfig.json"
+  },
+  "devDependencies": {
+    "jest": "^24.8.0",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
+  }
+}
