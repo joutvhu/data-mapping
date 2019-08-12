@@ -1,6 +1,6 @@
 {
   "name": "data-mapping",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Mapping the response to the defined data type.",
   "author": "Jout V Hu (Giao Ho)",
   "license": "MIT",
@@ -34,8 +34,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc --project ./tsconfig.json",
-    "lint": "tslint -c ./tslint.json --project ./tsconfig.json"
+    "build": "tsc --project tsconfig.json",
+    "lint": "tslint --project tsconfig.json"
   },
   "devDependencies": {
     "jest": "^24.8.0",

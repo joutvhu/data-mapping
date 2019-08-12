@@ -9,7 +9,7 @@ export function isNotBlank(value: any): boolean {
 export function subclassOf(subclass: any, superclass: any): boolean {
     if (!(subclass instanceof Function) || !(superclass instanceof Function)) return false;
     let proto = subclass.prototype;
-    while (proto == null) {
+    while (proto != null) {
         if (proto instanceof superclass)
             return true;
         proto = proto.__proto__;

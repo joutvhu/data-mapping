@@ -3,6 +3,7 @@ import {isBlank, isNotBlank} from './mapping.utils';
 export const ErrorConstant = {
     UNKNOWN: 'An unknown error has occurred when mapping data.',
     NULL: 'The data provided is null.',
+    NOT_ARRAY: 'The data provided is not an array.',
     PROVIDER_MAPPER: 'Please provide data mapper to parse data.'
 };
 
