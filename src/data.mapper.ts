@@ -43,11 +43,7 @@ export abstract class DataMapper<T> {
     abstract map(rs: any, index?: number): T;
 
     parse(rs: any, index?: number): T {
-        if (rs != null) {
-            if (rs.error) {
-            }
-            return this.map(rs, index);
-        }
+        if (rs != null) return this.map(rs, index);
         throw new MappingError(ErrorConstant.NULL, 2);
     }
 }
