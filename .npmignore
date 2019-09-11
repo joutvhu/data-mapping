@@ -12,4 +12,5 @@ tslint.json
 tsconfig*.json
 
 # Source
-/src
+src/**/*
+!src/**/*.ts

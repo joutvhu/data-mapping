@@ -32,8 +32,8 @@ function getParser<T>(mapper: DataMapperClass<T> | DataMapperFunction<T>): DataM
 }
 
 export interface MapperComfig<T> {
-    ignore?: 'null' | ((result: T, index?: number) => boolean)
-    data?: any;
+    ignore?: 'null' | ((result: T, index?: number) => boolean);
+    [key: string]: any;
 }
 
 function checkIgnore<T>(ignore?: 'null' | ((result: T, index?: number) => boolean)): ((result: T, index?: number) => boolean) {
@@ -50,7 +50,7 @@ export abstract class DataMapper<T> {
     static parseWith<T>(mapper: DataMapperClass<T> | DataMapperFunction<T>, rs: any | string, options?: MapperComfig<T>): T {
         const parser: DataMapper<T> = getParser(mapper);
         if (rs == null) throw new MappingError(ErrorConstant.NULL, 3);
-        const result = parser.parse(tryParseString(rs), undefined, options && options.data || undefined);
+        const result = parser.parse(tryParseString(rs), undefined, options);
         const isIgnore = checkIgnore(options && options.ignore || undefined);
         if (isIgnore(result)) throw new MappingError(ErrorConstant.IGNORED, 4);
         return result;
@@ -64,7 +64,7 @@ export abstract class DataMapper<T> {
         if (rs instanceof Array) {
             const isIgnore = checkIgnore(options && options.ignore || undefined);
             for (let i = 0, len = rs.length; i < len; i++) {
-                const item = parser.parse(rs[i], i, options && options.data || undefined);
+                const item = parser.parse(rs[i], i, options);
                 if (isIgnore(item, i)) continue;
                 result.push(item);
             }
@@ -85,7 +85,7 @@ export abstract class DataMapper<T> {
             for (let i = 0, len = keys.length; i < len; i++) {
                 key = keys[i];
                 if (isObj || key !== 'length' || typeof rs[key] !== 'number') {
-                    const item = parser.parse(rs[key], i, options && options.data || undefined);
+                    const item = parser.parse(rs[key], i, options);
                     if (isIgnore(item, i)) continue;
                     result[key] = item;
                 }
