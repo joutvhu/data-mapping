@@ -1,6 +1,6 @@
 {
   "name": "data-mapping",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Mapping the response to the defined data type.",
   "author": "Jout V Hu (Giao Ho)",
   "license": "MIT",
@@ -21,12 +21,10 @@
   "main": "lib/index.js",
   "types": "./lib/index.d.ts",
   "directories": {
-    "lib": "lib",
-    "src": "src"
+    "lib": "lib"
   },
   "files": [
     "lib",
-    "src",
     "README.md",
     "LICENSE"
   ],
