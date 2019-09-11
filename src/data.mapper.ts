@@ -1,7 +1,7 @@
 import {ErrorConstant, MappingError} from './mapping.error';
 import {subclassOf} from './mapping.utils';
 
-export type DataMapperFunction<T> = (rs: any, index?: number) => T;
+export type DataMapperFunction<T> = (rs: any, index?: number, data?: any) => T;
 export type DataMapperClass<T> = new() => DataMapper<T>;
 
 function tryParseString(rs: any): any {
@@ -21,9 +21,9 @@ function getParser<T>(mapper: DataMapperClass<T> | DataMapperFunction<T>): DataM
             mapperClass = mapper as DataMapperClass<T>;
         } else {
             mapperClass = class extends DataMapper<T> {
-                map(rs: any, index?: number): T {
+                map(rs: any, index?: number, data?: any): T {
                     const mapperFunction: DataMapperFunction<T> = mapper as DataMapperFunction<T>;
-                    return mapperFunction(rs, index);
+                    return mapperFunction(rs, index, data);
                 }
             };
         }
@@ -31,26 +31,48 @@ function getParser<T>(mapper: DataMapperClass<T> | DataMapperFunction<T>): DataM
     } else throw new MappingError(ErrorConstant.PROVIDER_MAPPER, 2);
 }
 
+export interface MapperComfig<T> {
+    ignore?: 'null' | ((result: T, index?: number) => boolean)
+    data?: any;
+}
+
+function checkIgnore<T>(ignore?: 'null' | ((result: T, index?: number) => boolean)): ((result: T, index?: number) => boolean) {
+    if (ignore) {
+        if (ignore === 'null')
+            return (result: T) => result == null;
+        else if (typeof ignore === 'function')
+            return ignore;
+    }
+    return () => false;
+}
+
 export abstract class DataMapper<T> {
-    static parseWith<T>(mapper: DataMapperClass<T> | DataMapperFunction<T>, rs: any | string): T {
+    static parseWith<T>(mapper: DataMapperClass<T> | DataMapperFunction<T>, rs: any | string, options?: MapperComfig<T>): T {
         const parser: DataMapper<T> = getParser(mapper);
         if (rs == null) throw new MappingError(ErrorConstant.NULL, 3);
-        return parser.parse(tryParseString(rs));
+        const result = parser.parse(tryParseString(rs), undefined, options && options.data || undefined);
+        const isIgnore = checkIgnore(options && options.ignore || undefined);
+        if (isIgnore(result)) throw new MappingError(ErrorConstant.IGNORED, 4);
+        return result;
     }
 
-    static parseArrayWith<T>(mapper: DataMapperClass<T> | DataMapperFunction<T>, rs: any[] | string): T[] {
+    static parseArrayWith<T>(mapper: DataMapperClass<T> | DataMapperFunction<T>, rs: any[] | string, options?: MapperComfig<T>): T[] {
         const parser: DataMapper<T> = getParser(mapper);
         const result: T[] = [];
         if (rs == null) throw new MappingError(ErrorConstant.NULL, 3);
         rs = tryParseString(rs);
         if (rs instanceof Array) {
-            for (let i = 0, len = rs.length; i < len; i++)
-                result.push(parser.parse(rs[i], i));
+            const isIgnore = checkIgnore(options && options.ignore || undefined);
+            for (let i = 0, len = rs.length; i < len; i++) {
+                const item = parser.parse(rs[i], i, options && options.data || undefined);
+                if (isIgnore(item, i)) continue;
+                result.push(item);
+            }
         } else throw new MappingError(ErrorConstant.NOT_ARRAY, 4);
         return result;
     }
 
-    static parseMapWith<T>(mapper: DataMapperClass<T> | DataMapperFunction<T>, rs: any | string): { [key: string]: T } {
+    static parseMapWith<T>(mapper: DataMapperClass<T> | DataMapperFunction<T>, rs: any | string, options?: MapperComfig<T>): { [key: string]: T } {
         const parser: DataMapper<T> = getParser(mapper);
         const result = {};
         if (rs == null) throw new MappingError(ErrorConstant.NULL, 3);
@@ -59,18 +81,22 @@ export abstract class DataMapper<T> {
         const keys = Object.getOwnPropertyNames(rs);
         if (keys && keys.length > 0) {
             let key;
+            const isIgnore = checkIgnore(options && options.ignore || undefined);
             for (let i = 0, len = keys.length; i < len; i++) {
                 key = keys[i];
-                if (isObj || key !== 'length' || typeof rs[key] !== 'number')
-                    result[key] = parser.parse(rs[key], i);
+                if (isObj || key !== 'length' || typeof rs[key] !== 'number') {
+                    const item = parser.parse(rs[key], i, options && options.data || undefined);
+                    if (isIgnore(item, i)) continue;
+                    result[key] = item;
+                }
             }
         }
         return result;
     }
 
-    abstract map(rs: any, index?: number): T;
+    abstract map(rs: any, index?: number, data?: any): T;
 
-    parse(rs: any, index?: number): T {
-        return this.map(rs, index);
+    parse(rs: any, index?: number, data?: any): T {
+        return this.map(rs, index, data);
     }
 }

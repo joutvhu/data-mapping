@@ -4,7 +4,8 @@ export const ErrorConstant = {
     UNKNOWN: 'An unknown error has occurred when mapping data.',
     NULL: 'The data provided is null.',
     NOT_ARRAY: 'The data provided is not an array.',
-    PROVIDER_MAPPER: 'Please provide data mapper to parse data.'
+    PROVIDER_MAPPER: 'Please provide data mapper to parse data.',
+    IGNORED: 'The result has been ignored.'
 };
 
 export class MappingError extends Error {
